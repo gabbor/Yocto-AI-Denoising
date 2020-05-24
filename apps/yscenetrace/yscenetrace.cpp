@@ -191,7 +191,7 @@ void init_scene(ptr::scene* scene, sio::model* ioscene, ptr::camera*& camera,
 int main(int argc, const char* argv[]) {
   // options
   auto params      = ptr::trace_params{};
-  auto save_batch  = false;
+  auto save_batch  = 0;
   auto camera_name = ""s;
   auto imfilename  = "out.hdr"s;
   auto filename    = "scene.json"s;
@@ -247,8 +247,8 @@ int main(int argc, const char* argv[]) {
   cli::print_progress("render image", 0, params.samples);
   for(auto sample = 0; sample < params.samples; sample ++) {
     cli::print_progress("render image", sample, params.samples);
-    trace_samples(state, scene, camera, params);
-    if(save_batch) {
+    trace_samples(state, scene, camera, params );
+    if(save_batch > 0 && (sample % save_batch == 0 )) {
         auto ext = "-s" + std::to_string(sample) +
                    fs::path(imfilename).extension().string();
         auto outfilename = fs::path(imfilename).replace_extension(ext).string();
