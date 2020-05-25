@@ -1433,6 +1433,70 @@ static vec4f trace_normal(const ptr::scene* scene, const ray3f& ray,
   return {normal * 0.5f + 0.5f, 1};
 }
 
+
+
+// Normal rendering for denoising.
+static vec4f trace_normal_denoiser(const ptr::scene* scene, const ray3f& ray,
+    rng_state& rng, const trace_params& params) {
+  // intersect next point
+  auto intersection = intersect_scene_bvh(scene, ray);
+  if (!intersection.hit) {
+    return {eval_environment(scene, ray), 1};
+  }
+
+  // prepare shading point
+  auto outgoing = -ray.d;
+  auto object   = scene->objects[intersection.object];
+  auto element  = intersection.element;
+  auto uv       = intersection.uv;
+  auto position = eval_position(object, element, uv);
+  auto normal   = eval_shading_normal(object, element, uv, outgoing);
+  auto brdf     = eval_brdf(object, element, uv, normal, outgoing);
+
+  auto incoming = zero3f;
+  if (brdf.metal != zero3f) {
+      brdf.roughness = 0.0f;
+      incoming = sample_delta(brdf, normal, outgoing, rand1f(rng));
+      return trace_normal(scene, ray3f{position, incoming}, rng, params);
+  }
+  
+  return {normal, 1};
+}
+
+
+
+// Albedo rendering for denoising
+static vec4f trace_albedo(const ptr::scene* scene, const ray3f& ray,
+    rng_state& rng, const trace_params& params) {
+  // intersect next point
+  auto intersection = intersect_scene_bvh(scene, ray);
+  if (!intersection.hit) {
+    return {eval_environment(scene, ray), 1};
+  }
+
+  // prepare shading point
+  auto outgoing = -ray.d;
+  auto object   = scene->objects[intersection.object];
+  auto element  = intersection.element;
+  auto uv       = intersection.uv;
+  auto position = eval_position(object, element, uv);
+  auto normal   = eval_shading_normal(object, element, uv, outgoing);
+  auto brdf     = eval_brdf(object, element, uv, normal, outgoing);
+
+  auto incoming = zero3f;
+  if (brdf.metal != zero3f) {
+      brdf.roughness = 0.0f;
+      incoming = sample_delta(brdf, normal, outgoing, rand1f(rng));
+      return trace_albedo(scene, ray3f{position, incoming}, rng, params);
+  }
+
+  else {
+      return { max(max(brdf.diffuse, brdf.specular), brdf.transmission), 1};
+  }
+}
+
+
+
 // Trace a single ray from the camera using the given algorithm.
 using shader_func = vec4f (*)(const ptr::scene* scene, const ray3f& ray,
     rng_state& rng, const trace_params& params);
@@ -1442,6 +1506,8 @@ static shader_func get_trace_shader_func(const trace_params& params) {
     case shader_type::path: return trace_path;
     case shader_type::eyelight: return trace_eyelight;
     case shader_type::normal: return trace_normal;
+    case shader_type::normal_denoiser: return trace_normal_denoiser;
+    case shader_type::albedo: return trace_albedo;
     default: {
       throw std::runtime_error("sampler unknown");
       return nullptr;
