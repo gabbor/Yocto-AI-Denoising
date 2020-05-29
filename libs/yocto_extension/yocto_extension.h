@@ -75,6 +75,8 @@ using math::zero3f;
 // -----------------------------------------------------------------------------
 namespace yocto::extension {
 
+    img::image<vec3f> nlm_denoise(img::image<vec3f> img, int Ds, int ds, int h); 
+
 }  // namespace yocto::pathtrace
 
 #endif
