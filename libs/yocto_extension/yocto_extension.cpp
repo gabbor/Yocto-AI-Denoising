@@ -94,7 +94,6 @@ namespace yocto::extension {
 
         for (auto j = 0; j < size.y; j++) {
             for (auto i = 0; i < size.x; i++) {
-                //printf("%f, %f, %f\n", img[{i, j}].x, img[{i, j}].y, img[{i, j}].z );
                 result[{i+border, j+border}] = img[{i,j}];
             }
         }
@@ -188,10 +187,10 @@ namespace yocto::extension {
                         for (auto z1 = -ds; z1 < ds; z1++) {
                             for (auto z2 = -ds; z2 < ds; z2++) {
 
-                                printf("x1 + z1 %d\n", x1 + z1);           
-                                printf("x2 + z2 %d\n", x2 + z2);   
-                                printf("y1 + z1 %d\n", y1 + z1);                           
-                                printf("y2 + z2 %d\n", y2 + z2);
+                                // printf("x1 + z1 %d\n", x1 + z1);           
+                                // printf("x2 + z2 %d\n", x2 + z2);   
+                                // printf("y1 + z1 %d\n", y1 + z1);                           
+                                // printf("y2 + z2 %d\n", y2 + z2);
                                 
                                 dist2 += (1/ d*d) * pow(ref_img[{x2 + z2, x1 + z1}].x - ref_img[{y2 + z2, x1 + z1}].x, 2);
                                 dist2 += (1/ d*d) * pow(ref_img[{x2 + z2, x1 + z1}].y - ref_img[{y2 + z2, x1 + z1}].y, 2);
@@ -227,28 +226,6 @@ namespace yocto::extension {
         //return ref_img;
         return result;
     }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 
