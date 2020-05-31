@@ -1479,19 +1479,30 @@ static vec4f trace_albedo(const ptr::scene* scene, const ray3f& ray,
   auto object   = scene->objects[intersection.object];
   auto element  = intersection.element;
   auto uv       = intersection.uv;
+  auto texcoord = eval_texcoord(object, element, uv);
   auto position = eval_position(object, element, uv);
   auto normal   = eval_shading_normal(object, element, uv, outgoing);
   auto brdf     = eval_brdf(object, element, uv, normal, outgoing);
 
   auto incoming = zero3f;
-  if (brdf.metal != zero3f) {
-      brdf.roughness = 0.0f;
+  if (is_delta(brdf)) {
       incoming = sample_delta(brdf, normal, outgoing, rand1f(rng));
       return trace_albedo(scene, ray3f{position, incoming}, rng, params);
   }
 
   else {
-      return { max(max(brdf.diffuse, brdf.specular), brdf.transmission), 1};
+      auto material = object->material;
+
+      if (material->emission != zero3f) {
+        auto x = clamp(material->emission.x, 0.0f, 1.0f);
+        auto y = clamp(material->emission.x, 0.0f, 1.0f);
+        auto z = clamp(material->emission.x, 0.0f, 1.0f);
+        return {vec3f(x, y, z), 1};
+      }
+      else {
+        auto base_color  = object->material->color * eval_texture(object->material->color_tex, texcoord, false);
+        return {base_color, 1};
+      }
   }
 }
 
