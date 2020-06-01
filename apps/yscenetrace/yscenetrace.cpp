@@ -244,11 +244,12 @@ int main(int argc, const char* argv[]) {
   init_state(state, scene, camera, params);
 
   // render
+  auto next_save = 4;
   cli::print_progress("render image", 0, params.samples);
   for(auto sample = 0; sample < params.samples; sample ++) {
     cli::print_progress("render image", sample, params.samples);
     trace_samples(state, scene, camera, params );
-    if(save_batch > 0 && (sample % save_batch == 0 )) {
+    if(save_batch != 0 && sample == next_save) {
         auto ext = "-s" + std::to_string(sample) +
                    fs::path(imfilename).extension().string();
         auto outfilename = fs::path(imfilename).replace_extension(ext).string();
@@ -256,6 +257,8 @@ int main(int argc, const char* argv[]) {
         cli::print_progress("save image", sample, params.samples);
         if (!save_image(outfilename, state->render, ioerror))
           cli::print_fatal(ioerror);
+
+        next_save *= 2;
     }
   }
   cli::print_progress("render image", params.samples, params.samples);
