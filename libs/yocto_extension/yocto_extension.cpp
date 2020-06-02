@@ -158,7 +158,7 @@ namespace yocto::extension {
 
 
 
-        img::image<vec3f> nlm_denoise(img::image<vec3f> img, int Ds, int ds, int h) { // TODO: check parameter h
+    img::image<vec3f> nlm_denoise(img::image<vec3f> img, int Ds, int ds, float sigma_s, float sigma_r, float k) { // TODO: check parameters
         // initialization
         auto size = img.size();
         auto D = 2*Ds +1;
@@ -166,64 +166,54 @@ namespace yocto::extension {
         auto nc = 3;
 
         auto result = img::image<vec3f>(size);
+
+        // symmetrized noisy image with border Ds+ds
         auto ref_img = reflection_padding(img, Ds + ds);
 
         printf("size: y=%d, x=%d\n", img.size().y, img.size().x );
         printf("reflected size: y=%d, x=%d\n", ref_img.size().y, ref_img.size().x );
 
-        // K = compute kernel
 
         auto weights = std::vector<float>();
 
         for (auto x1 = Ds+ds; x1 < ref_img.size().y - (Ds+ds); x1++) {
-            for (auto x2 = Ds+ds; x2 < ref_img.size().x - (Ds+ds); x2++) {
-                weights.clear();  
-                
+            for (auto x2 = Ds+ds; x2 < ref_img.size().x - (Ds+ds); x2++) { // x = (x1, x2) center of the 1st patch
+                weights.clear();
                 
                 for (auto y1 = x1-Ds; y1 < x1+Ds; y1++) {
-                    for (auto y2 = x2-Ds; y2 < x2+Ds; y2++) {
-                        auto dist2 = 0;
-
+                    for (auto y2 = x2-Ds; y2 < x2+Ds; y2++) { // y = (y1, y2) center of 2nd patch
+                        
+                        // compute distance between patches
+                        auto patch_dist = 0;
                         for (auto z1 = -ds; z1 < ds; z1++) {
-                            for (auto z2 = -ds; z2 < ds; z2++) {
-
-                                // printf("x1 + z1 %d\n", x1 + z1);           
-                                // printf("x2 + z2 %d\n", x2 + z2);   
-                                // printf("y1 + z1 %d\n", y1 + z1);                           
-                                // printf("y2 + z2 %d\n", y2 + z2);
-                                
-                                dist2 += (1/ d*d) * pow(ref_img[{x2 + z2, x1 + z1}].x - ref_img[{y2 + z2, x1 + z1}].x, 2);
-                                dist2 += (1/ d*d) * pow(ref_img[{x2 + z2, x1 + z1}].y - ref_img[{y2 + z2, x1 + z1}].y, 2);
-                                dist2 += (1/ d*d) * pow(ref_img[{x2 + z2, x1 + z1}].z - ref_img[{y2 + z2, x1 + z1}].z, 2);
+                            for (auto z2 = -ds; z2 < ds; z2++) {               
+                                auto p = ref_img[{x2 + z2, x1 + z1}];
+                                auto q = ref_img[{y2 + z2, y1 + z1}];
+                                patch_dist += (1/(d*d)) * math::distance_squared(p, q);
                             }
                         }
-
-                        // compute weights
-                        weights.push_back(exp(dist2 / (nc * pow(h, 2))));
+                        // compute weight w(x, y)
+                        auto p = ref_img[{x2, x1}];
+                        auto q = ref_img[{y2, y1}];
+                        auto w = exp( (-math::distance_squared(p, q)) / (2*sigma_s*sigma_s) ) * exp(-patch_dist / (k*k*2*sigma_r*sigma_r));
+                        weights.push_back(w);
                     }
                 }
-
                 auto r = zero3f;
                 auto s = 0.0f;
                 auto i=0;
                 for (auto y1 = x1-Ds; y1 < x1+Ds; y1++) {
                      for (auto y2 = x2-Ds; y2 < x2+Ds; y2++) {
-                         r.x += weights[i] * ref_img[{y2, y1}].x;
-                         r.y += weights[i] * ref_img[{y2, y1}].y;
-                         r.z += weights[i] * ref_img[{y2, y1}].z;
+                         r += weights[i] * ref_img[{y2, y1}];
                          s += weights[i];
                          i += 1;
                      }
                 }
 
-                result[{x2 - (Ds + ds), x1 - (Ds + ds)}].x = clamp(r.x / s, 0.0, 1.0);
-                result[{x2 - (Ds + ds), x1 - (Ds + ds)}].y = clamp(r.y / s, 0.0, 1.0);
-                result[{x2 - (Ds + ds), x1 - (Ds + ds)}].z = clamp(r.z / s, 0.0, 1.0);
+                result[{x2 - (Ds + ds), x1 - (Ds + ds)}] = clamp(r/s, 0.0f, 1.0f);
             }
         }
 
-
-        //return ref_img;
         return result;
     }
 
