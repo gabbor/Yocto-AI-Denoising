@@ -12,8 +12,10 @@ namespace ext = yocto::extension;
 
 int main(int argc, const char* argv[]) {
 
+
+  //  ./bin/ynlmdenoise -i ./out/bathroom/bathroom_1080_256.hdr -o ouput.hdr --Ds 3 --ds 3 --sigma-s 5 --sigma-r 5 -k 0.5
   
-    // command line options  
+  // command line options  
   string input_filename;
   string albedo_filename;
   string normal_filename;
@@ -38,22 +40,33 @@ int main(int argc, const char* argv[]) {
   cli::add_option(cli, "--strength,-k", k, "Strength of the filter", true);
   
   // optional
-  cli::add_option(cli, "--albedo,-a", albedo_filename, "Albedo image filename"); 
-  cli::add_option(cli, "--normal,-n", normal_filename, "Normal image filename"); 
+  cli::add_option(cli, "--albedo,-a", albedo_filename, "Albedo image filename", true); 
+  cli::add_option(cli, "--normal,-n", normal_filename, "Normal image filename", true); 
   cli::parse_cli(cli, argc, argv);
 
 
-
+  
 
   // input image
   img::image<vec3f> img = {};
+  img::image<vec3f> albedo_image = {};
+  img::image<vec3f> normal_image = {};
 
-  string error = "load error";
-  img::load_image(input_filename, img, error);
-  auto size = img.size();
+  auto ioerror = ""s;
   
-  auto res = ext::nlm_denoise(img , Ds, ds, sigma_s, sigma_r, k);
-  img::save_image(output_filename, res, error);
+  img::load_image(input_filename, img, ioerror);
+  auto size = img.size();
+
+  if (! albedo_filename.empty()) {
+    img::load_image(albedo_filename, albedo_image, ioerror);
+  }
+
+  if (! normal_filename.empty()) {
+    img::load_image(normal_filename, normal_image, ioerror);
+  }
+  
+  auto res = ext::nlm_denoise(img , albedo_image, normal_image, Ds, ds, sigma_s, sigma_r, k);
+  img::save_image(output_filename, res, ioerror);
 
   return 0;
 
