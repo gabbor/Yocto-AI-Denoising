@@ -158,24 +158,25 @@ namespace yocto::extension {
 
 
 
-    img::image<vec3f> nlm_denoise(img::image<vec3f> img, int Ds, int ds, float sigma_s, float sigma_r, float k) { // TODO: check parameters
+    img::image<vec3f> nlm_denoise(img::image<vec3f> img, img::image<vec3f> albedo, img::image<vec3f> normal, 
+        int Ds, int ds, float sigma_s, float sigma_r, float k) { // TODO: check parameters
+
         // initialization
         auto size = img.size();
         auto D = 2*Ds +1;
         auto d = 2*ds +1;
-        auto nc = 3;
 
         auto result = img::image<vec3f>(size);
 
         // symmetrized noisy image with border Ds+ds
         auto ref_img = reflection_padding(img, Ds + ds);
+        auto ref_albedo = reflection_padding(albedo, Ds + ds);
+        auto ref_normal = reflection_padding(normal, Ds + ds);
 
         printf("size: y=%d, x=%d\n", img.size().y, img.size().x );
         printf("reflected size: y=%d, x=%d\n", ref_img.size().y, ref_img.size().x );
 
-
         auto weights = std::vector<float>();
-
         for (auto x1 = Ds+ds; x1 < ref_img.size().y - (Ds+ds); x1++) {
             for (auto x2 = Ds+ds; x2 < ref_img.size().x - (Ds+ds); x2++) { // x = (x1, x2) center of the 1st patch
                 weights.clear();
@@ -193,9 +194,13 @@ namespace yocto::extension {
                             }
                         }
                         // compute weight w(x, y)
-                        auto p = ref_img[{x2, x1}];
-                        auto q = ref_img[{y2, y1}];
-                        auto w = exp( (-math::distance_squared(p, q)) / (2*sigma_s*sigma_s) ) * exp(-patch_dist / (k*k*2*sigma_r*sigma_r));
+                        auto w = exp( (-math::distance_squared(ref_img[{x2, x1}], ref_img[{y2, y1}])) / (2*sigma_s*sigma_s) );
+                        w *= exp(-patch_dist / (k*k*2*sigma_r*sigma_r));
+
+                        //
+                        w *= exp(-math::distance_squared(ref_albedo[{x2, x1}], ref_albedo[{y2, y1}])  / (2*sigma_s*sigma_s)); // TODO: check parameters
+                        w *= exp(-math::distance_squared(ref_normal[{x2, x1}], ref_normal[{y2, y1}])  / (2*sigma_s*sigma_s));
+
                         weights.push_back(w);
                     }
                 }
