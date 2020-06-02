@@ -43,7 +43,7 @@
 ./bin/yimgdenoise -i out/car/car_1080_256.hdr -o out/car/car_1080_256_denoise.hdr  --verbose 2 --normal out/car/car_normal.hdr --albedo out/car/car_albedo.hdr
 
 
-./bin/yimgdenoise -i out/bistrointerior/bistroexterior_1080_256.-s4.hdr -o out/bistroexterior/bistroexterior_1080_256.-s4_denoise.hdr  --verbose 2 --normal out/bistroexterior/bistroexterior_normal.hdr --albedo out/bistroexterior/bistroexterior_albedo.hdr
+./bin/yimgdenoise -i out/bistroexterior/bistroexterior_1080_256.-s4.hdr -o out/bistroexterior/bistroexterior_1080_256.-s4_denoise.hdr  --verbose 2 --normal out/bistroexterior/bistroexterior_normal.hdr --albedo out/bistroexterior/bistroexterior_albedo.hdr
 ./bin/yimgdenoise -i out/bistroexterior/bistroexterior_1080_256.-s8.hdr -o out/bistroexterior/bistroexterior_1080_256.-s8_denoise.hdr  --verbose 2 --normal out/bistroexterior/bistroexterior_normal.hdr --albedo out/bistroexterior/bistroexterior_albedo.hdr
 ./bin/yimgdenoise -i out/bistroexterior/bistroexterior_1080_256.-s16.hdr -o out/bistroexterior/bistroexterior_1080_256.-s16_denoise.hdr  --verbose 2 --normal out/bistroexterior/bistroexterior_normal.hdr --albedo out/bistroexterior/bistroexterior_albedo.hdr
 ./bin/yimgdenoise -i out/bistroexterior/bistroexterior_1080_256.-s32.hdr -o out/bistroexterior/bistroexterior_1080_256.-s32_denoise.hdr  --verbose 2 --normal out/bistroexterior/bistroexterior_normal.hdr --albedo out/bistroexterior/bistroexterior_albedo.hdr
