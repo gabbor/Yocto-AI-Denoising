@@ -39,13 +39,24 @@ The following example shows the improvements achievable with the additional buff
 ### Color only
 ![bathroom_denoise0](./images/bathroom_1080_128_denoise_no_features.jpg)
 
-### Color, albedo, normal buffers
+### Color and features buffers
 ![bathroom_denoise1](./images/bathroom_1080_128_denoise.jpg)
 
 
 
 ## Non Local Means
-
+The implementation of the Non Local Means (NLM) denoiser is contained in `yocto_extension` in the function `nlm_denoise()`.
+Non Local Means estimates the value of a pixel as a weighted average of its neighborhood. To ensure that each pixel has a well-defined neighborhood, the input image is padded using reflective padding. Weights are computed as described [here](https://benedikt-bitterli.me/nfor/nfor.pdf) also considering the available albedo and normal buffers.
+To filter an image with NLM you can use the `ynlmdenoise` app which takes as options:
+- **--input-image**   input noisy image filename
+- **--output-image**  output image filename
+- **--normal**  normal image filename
+- **--albedo**  albedo image filename 
+- **--Ds** search window side half-length
+- **--ds** patch side half-length
+- **--sigma-s** adjust the squared distance
+- **--sigma-r** adjust the patch-based squared distance
+- **--strength** strength of the filter
 
 ## Test
 
