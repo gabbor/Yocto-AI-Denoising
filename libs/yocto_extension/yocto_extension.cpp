@@ -186,8 +186,8 @@ namespace yocto::extension {
                         
                         // compute distance between patches
                         auto patch_dist = 0;
-                        for (auto z1 = -ds; z1 < ds; z1++) {
-                            for (auto z2 = -ds; z2 < ds; z2++) {               
+                        for (auto z1 = -ds; z1 <= ds; z1++) {
+                            for (auto z2 = -ds; z2 <= ds; z2++) {               
                                 auto p = ref_img[{x2 + z2, x1 + z1}];
                                 auto q = ref_img[{y2 + z2, y1 + z1}];
                                 patch_dist += (1/(d*d)) * math::distance_squared(p, q);
@@ -197,8 +197,8 @@ namespace yocto::extension {
                         auto w = exp( (-math::distance_squared(ref_img[{x2, x1}], ref_img[{y2, y1}])) / (2*sigma_s*sigma_s) );
                         w *= exp(-patch_dist / (k*k*2*sigma_r*sigma_r));
 
-                        //
-                        w *= exp(-math::distance_squared(ref_albedo[{x2, x1}], ref_albedo[{y2, y1}])  / (2*sigma_s*sigma_s)); // TODO: check parameters
+                        // compute aux weights
+                        w *= exp(-math::distance_squared(ref_albedo[{x2, x1}], ref_albedo[{y2, y1}])  / (2*sigma_s*sigma_s));
                         w *= exp(-math::distance_squared(ref_normal[{x2, x1}], ref_normal[{y2, y1}])  / (2*sigma_s*sigma_s));
 
                         weights.push_back(w);
