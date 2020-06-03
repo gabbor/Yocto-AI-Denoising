@@ -12,9 +12,9 @@ The main purpose of this project is to integrate and test the [Intel Open Image 
 
 The results obtained with the intel denoiser are very convincing and show that this denoiser works well even with images generated using few ssp. The following images are some examples
 
-![classroom](./images/classroom.jpg)
-
 ![bistroexterior](./images/bistroexterior.jpg)
+
+![classroom](./images/classroom.jpg)
 
 
 ## Feature images
