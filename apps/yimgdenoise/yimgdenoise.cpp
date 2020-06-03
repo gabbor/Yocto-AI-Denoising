@@ -25,13 +25,13 @@ int main(int argc, const char* argv[]) {
   string normal_filename;
   string output_filename;
 
-  int numThreads = 0;
-  int verbose = 2;
+  int numThreads = -1;
+  int verbose = -1;
+  int maxMemoryMB = -1;
 
   // bind software threads to hardware threads 
   // if set to true (improves performance); false disables binding
-  int affinity = true;
-  int maxMemoryMB = 6000;
+  int affinity = 1;
 
   auto cli = cli::make_cli("yimgdenoise", "Intel Open Image Denoiser app");
   
@@ -51,8 +51,9 @@ int main(int argc, const char* argv[]) {
 
   // create a device and set its parameters
   oidn::DeviceRef device = oidn::newDevice(oidn::DeviceType::CPU);
-  device.set("numThreads", numThreads);
-  device.set("verbose", verbose);
+  if (numThreads >= 0) device.set("numThreads", numThreads);
+  if (verbose >= 0) device.set("verbose", verbose);
+  
   device.set("setAffinity", (bool)affinity);
 
   const char* device_error_message;
@@ -107,11 +108,14 @@ int main(int argc, const char* argv[]) {
   printf("image is hdr: %d\n", is_hdr);
   filter.set("hdr", is_hdr);
 
-  //TODO set filter parameters
-  filter.commit();
-  // ilter the image
-  filter.execute();
+  if (maxMemoryMB >= 0) {
+    filter.set("maxMemoryMB", maxMemoryMB);
+  }
 
+  filter.commit();
+
+  // filter and save the image
+  filter.execute();
   img::save_image(output_filename, output_image, error);
   
   return 0;
