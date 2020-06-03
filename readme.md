@@ -1,6 +1,5 @@
 # Yocto AI Denoising
-The main purpose of this project is to integrate and test the [Intel Open Image Denoiser](https://openimagedenoise.github.io). 
-The `yimgdenoise.cpp` app uses the denoiser API to filter noisy images obtained through MC rendering. The parameters that can be passed from the command line to this app are:
+The main purpose of this project is to integrate and test the [Intel Open Image Denoiser](https://openimagedenoise.github.io) in Yocto. The `yimgdenoise.cpp` app uses the denoiser API to filter noisy images obtained through MC rendering. The parameters that can be passed from the command line to this app are:
 
 - **--input-image**   input noisy image filename
 - **--output-image**  output image filename
@@ -11,9 +10,12 @@ The `yimgdenoise.cpp` app uses the denoiser API to filter noisy images obtained 
 - **--verbose** device verbosity level
 - **--setAffinity** bind software threads to hardware threads if set to true (improves performance); false disables binding
 
+The results obtained with the intel denoiser are very convincing and show that this denoiser works well even with images generated using few ssp. The following images are some examples
 
+![image1](./images/classroom.png)
 
-To complete the assignment, you will have to
+![image2](./images/bistroexterior.png)
+
 
 
 
