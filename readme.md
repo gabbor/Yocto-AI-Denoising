@@ -59,6 +59,14 @@ To filter an image with NLM you can use the `ynlmdenoise` app which takes as opt
 - **--strength** strength of the filter
 
 ## Test
+The Intel denoiser has been tested on 10 scenes selected from those of homework 2. Two simple scripts were used for testing
+- `generate_images.sh` for each scene:
+  - generates a 256 spp HDR image and saves and the intermediate images obtained with 4, 8, 16, 32, 64, 128 spp
+  - computes normal and albedo images using the implemented shaders
+- `denoise_test.sh` test the denoiser using the generated images
+
+Results of the Intel denoiser are contained in the directory `./out/hdr`. NLM has only been tested on 256 spp images as it works really badly with fewer samples. Moreover even with 256 ssp it seems difficult to avoid blurring effects (especially for textures). Some images obtained with NLM are shown below
+
 
 
 
