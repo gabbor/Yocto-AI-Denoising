@@ -12,9 +12,9 @@ The main purpose of this project is to integrate and test the [Intel Open Image 
 
 The results obtained with the intel denoiser are very convincing and show that this denoiser works well even with images generated using few ssp. The following images are some examples
 
-![image1](./images/classroom.png)
+![classroom](./images/classroom.jpg)
 
-![image2](./images/bistroexterior.png)
+![bistroexterior](./images/bistroexterior.jpg)
 
 
 ## Feature images
@@ -25,10 +25,24 @@ The performance of the denoiser improves significantly by exploiting the two add
   - for non delta surfaces it's the color of the material multiplied by the color texture
   - for delta surfaces the albedo is computed recursively follwing the ray sampled with the function `sample_delta()`
 
+The following example shows the improvements achievable with the additional buffers. In particular, it can be seen that the details of the mirror in the scene are well reconstructed only with the use of the normal and albedo images. Another obvious benefit is that the textures are preserved very well.
+
+### Input
+![bathroom_normal](./images/bathroom_1080_128.jpg)
+
 ### Normal
-The normal image is computed 
+![bathroom_normal](./images/bathroom_normal.jpg)
+
 ### Albedo
-The albedo image is computed
+![bathroom_albedo](./images/bathroom_albedo.jpg)
+
+### Color only
+![bathroom_denoise0](./images/bathroom_1080_128_denoise_no_features.jpg)
+
+### Color, albedo, normal buffers
+![bathroom_denoise1](./images/bathroom_1080_128_denoise.jpg)
+
+
 
 ## Non Local Means
 
