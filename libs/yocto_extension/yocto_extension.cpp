@@ -44,37 +44,10 @@ using namespace std::string_literals;
 // -----------------------------------------------------------------------------
 namespace yocto::extension {
 
-// import math symbols for use
-using math::abs;
-using math::acos;
-using math::atan2;
-using math::clamp;
-using math::cos;
-using math::exp;
-using math::flt_max;
-using math::fmod;
-using math::fresnel_conductor;
-using math::fresnel_dielectric;
-using math::identity3x3f;
-using math::invalidb3f;
-using math::log;
-using math::make_rng;
-using math::max;
-using math::min;
-using math::pif;
-using math::pow;
-using math::sample_discrete_cdf;
-using math::sample_discrete_cdf_pdf;
-using math::sample_uniform;
-using math::sample_uniform_pdf;
-using math::sin;
-using math::sqrt;
-using math::zero2f;
+
 using math::zero2i;
-using math::zero3f;
-using math::zero3i;
-using math::zero4f;
-using math::zero4i;
+using math::distance_squared;
+
 
 }  // namespace yocto::pathtrace
 
@@ -152,14 +125,13 @@ namespace yocto::extension {
             }
         }
 
-
         return result;
     }
 
 
 
     img::image<vec3f> nlm_denoise(img::image<vec3f> img, img::image<vec3f> albedo, img::image<vec3f> normal, 
-        int Ds, int ds, float sigma_s, float sigma_r, float k) { // TODO: check parameters
+        int Ds, int ds, float sigma_s, float sigma_r, float k) {
 
         // initialization
         auto size = img.size();
@@ -190,16 +162,16 @@ namespace yocto::extension {
                             for (auto z2 = -ds; z2 <= ds; z2++) {               
                                 auto p = ref_img[{x2 + z2, x1 + z1}];
                                 auto q = ref_img[{y2 + z2, y1 + z1}];
-                                patch_dist += (1/(d*d)) * math::distance_squared(p, q);
+                                patch_dist += (1/(d*d)) * distance_squared(p, q);
                             }
                         }
                         // compute weight w(x, y)
-                        auto w = exp( (-math::distance_squared(ref_img[{x2, x1}], ref_img[{y2, y1}])) / (2*sigma_s*sigma_s) );
+                        auto w = exp( (-distance_squared(ref_img[{x2, x1}], ref_img[{y2, y1}])) / (2*sigma_s*sigma_s) );
                         w *= exp(-patch_dist / (k*k*2*sigma_r*sigma_r));
 
                         // compute aux weights
-                        w *= exp(-math::distance_squared(ref_albedo[{x2, x1}], ref_albedo[{y2, y1}])  / (2*sigma_s*sigma_s));
-                        w *= exp(-math::distance_squared(ref_normal[{x2, x1}], ref_normal[{y2, y1}])  / (2*sigma_s*sigma_s));
+                        w *= exp(-distance_squared(ref_albedo[{x2, x1}], ref_albedo[{y2, y1}])  / (2*sigma_s*sigma_s));
+                        w *= exp(-distance_squared(ref_normal[{x2, x1}], ref_normal[{y2, y1}])  / (2*sigma_s*sigma_s));
 
                         weights.push_back(w);
                     }
