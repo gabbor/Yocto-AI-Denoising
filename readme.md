@@ -68,12 +68,15 @@ The Intel denoiser has been tested on 10 scenes selected from those of homework 
 Results of the Intel denoiser are contained in the directory `./out/hdr`. NLM has only been tested on 256 spp images as it works really badly with fewer samples. You can find the results obtained with NLM in the directory `./out/nlm_out`. Even with 256 spp it seems difficult to avoid blurring effects (especially for textures) and on some particularly noisy scenes the results are not very good. Some images obtained with NLM are shown below
 
 ### Input images
+![nlm_input0](./images/bistroexterior_1080_256.jpg)
+
+![nlm_input1](./images/bistrointerior_1080_256.jpg)
 
 
 ### NLM output
-![nlm_exmaple0](./images/bistroexterior_1080_256_nlmdenoise.jpg)
+![nlm_output0](./images/bistroexterior_1080_256_nlmdenoise.jpg)
 
-![nlm_exmaple1](./images/bistrointerior_1080_256_nlmdenoise.jpg)
+![nlm_output1](./images/bistrointerior_1080_256_nlmdenoise.jpg)
 
 
 
