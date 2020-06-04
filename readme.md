@@ -10,7 +10,7 @@ The main purpose of this project is to integrate and test the [Intel Open Image 
 - **--verbose** device verbosity level
 - **--setAffinity** bind software threads to hardware threads if set to true (improves performance); false disables binding
 
-The results obtained with the intel denoiser are very convincing and show that this denoiser works well even with images generated using few ssp. The following images are some examples
+The results obtained with the intel denoiser are very convincing and show that this denoiser works well even with images generated using few spp. The following images are some examples
 
 ![bistroexterior](./images/bistroexterior.jpg)
 
@@ -61,13 +61,18 @@ To filter an image with NLM you can use the `ynlmdenoise` app which takes as opt
 ## Test
 The Intel denoiser has been tested on 10 scenes selected from those of homework 2. Two simple scripts were used for testing
 - `generate_images.sh` for each scene:
-  - generates a 256 spp HDR image and saves and the intermediate images obtained with 4, 8, 16, 32, 64, 128 spp
+  - generates a 256 spp HDR image and saves the intermediate images obtained with 4, 8, 16, 32, 64, 128 spp
   - computes normal and albedo images using the implemented shaders
 - `denoise_test.sh` test the denoiser using the generated images
 
-Results of the Intel denoiser are contained in the directory `./out/hdr`. NLM has only been tested on 256 spp images as it works really badly with fewer samples. Moreover even with 256 ssp it seems difficult to avoid blurring effects (especially for textures). Some images obtained with NLM are shown below
+Results of the Intel denoiser are contained in the directory `./out/hdr`. NLM has only been tested on 256 spp images as it works really badly with fewer samples. You can find the results obtained with NLM in the directory `./out/nlm_out`. Even with 256 spp it seems difficult to avoid blurring effects (especially for textures) and on some particularly noisy scenes the results are not very good. Some images obtained with NLM are shown below
 
+### Input images
+
+
+### NLM output
 ![nlm_exmaple0](./images/bistroexterior_1080_256_nlmdenoise.jpg)
+
 ![nlm_exmaple1](./images/bistrointerior_1080_256_nlmdenoise.jpg)
 
 
